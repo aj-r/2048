@@ -53,8 +53,19 @@ GameManager.prototype.setup = function () {
 
 // Set up the initial tiles to start the game with
 GameManager.prototype.addStartTiles = function () {
-  this.grid.insertTile(new Tile({x: 0, y: 0}, 2));
-  this.grid.insertTile(new Tile({x: 1, y: 0}, 4));
+  // Spawn the first tile in a random corner.
+  var cell1 = {x: 0, y: 0};
+  var corner = Math.floor(Math.random() * 4);
+  if (corner > 1)
+    cell1.y = this.size - 1;
+  if (corner % 2 > 0)
+    cell1.x = this.size - 1;
+  var value1 = (Math.random() > 0.5 ? 4 : 2);
+  this.grid.insertTile(new Tile(cell1, value1));
+  // Spawn the remaining tiles using the normal algorithm.
+  for (var i = 1; i < this.startTiles; i++) {
+    this.addTile();
+  }
 };
 
 // Adds a tile in (hopefully) the worst position possible
