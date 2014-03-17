@@ -53,8 +53,8 @@ GameManager.prototype.setup = function () {
 
 // Set up the initial tiles to start the game with
 GameManager.prototype.addStartTiles = function () {
-  this.grid.insertTile(new Tile({x: 0, y: 0}, 2);
-  this.grid.insertTile(new Tile({x: 1, y: 0}, 4);
+  this.grid.insertTile(new Tile({x: 0, y: 0}, 2));
+  this.grid.insertTile(new Tile({x: 1, y: 0}, 4));
 };
 
 // Adds a tile in (hopefully) the worst position possible
