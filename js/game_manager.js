@@ -53,15 +53,12 @@ GameManager.prototype.setup = function () {
 
 // Set up the initial tiles to start the game with
 GameManager.prototype.addStartTiles = function () {
-  for (var i = 0; i < this.startTiles; i++) {
-    this.addTile();
-  }
+  this.grid.insertTile(new Tile({x: 0, y: 0}, 2);
+  this.grid.insertTile(new Tile({x: 1, y: 0}, 4);
 };
 
 // Adds a tile in (hopefully) the worst position possible
 GameManager.prototype.addTile = function () {
-  // 0: up, 1: right, 2:down, 3: left
-  var self = this;
   if (this.grid.cellsAvailable()) {
     //var value = Math.random() < 0.9 ? 2 : 4;
     //var tile = new Tile(this.grid.randomAvailableCell(), value);
@@ -103,6 +100,7 @@ GameManager.prototype.addTile = function () {
     for (i = 0; i < cellOptions.length; i++) {
       // Look at the surrounding cells
       var minValue = maxTileValue;
+      var scored = false;
       for (var direction = 0; direction < 4; direction++) {
         var adjVector = this.getVector(direction);
         var adjCell = {
@@ -112,7 +110,11 @@ GameManager.prototype.addTile = function () {
         var adjTile = this.grid.cellContent(adjCell);
         if (adjTile) {
           minValue = Math.min(minValue, adjTile.value);
+          scored = true;
         }
+      }
+      if (!scored) {
+        score = 0;
       }
       if (minValue > bestScore) {
         winners = [];
