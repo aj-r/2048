@@ -113,6 +113,7 @@ GameManager.prototype.addTile = function () {
       // Look at the surrounding cells
       var minValue = maxTileValue;
       var scored = false;
+      var adjacent4 = false;
       for (var direction = 0; direction < 4; direction++) {
         var adjVector = this.getVector(direction);
         var adjCell = {
@@ -123,6 +124,8 @@ GameManager.prototype.addTile = function () {
         if (adjTile) {
           minValue = Math.min(minValue, adjTile.value);
           scored = true;
+          if (adjTile.value == 4)
+            adjacent4 = true;
         }
       }
       if (!scored) {
@@ -138,7 +141,7 @@ GameManager.prototype.addTile = function () {
     }
     if (winners.length) {
       var winnerIndex = Math.floor(Math.random() * winners.length);
-      var value = (bestScore != 2 ? 2 : 4);
+      var value = (adjacent4 || bestScore != 2 ? 2 : 4);
       var tile = new Tile(winners[winnerIndex], value);
       this.grid.insertTile(tile);
     }
