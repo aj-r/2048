@@ -99,7 +99,7 @@ GameManager.prototype.addTile = function () {
     // Find the available cell with the best score
     var bestScore = 0;
     var winners = [];
-    var maxTileValue = Math.pow(2, this.size * this.size);
+    var maxTileValue = Math.pow(2, Math.min(this.size * this.size, 32));
     for (i = 0; i < cellOptions.length; i++) {
       // Look at the surrounding cells
       var minValue = maxTileValue;
