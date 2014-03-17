@@ -99,6 +99,7 @@ GameManager.prototype.addTile = function () {
           cell.y = this.size - j - 1;
         else
           cell.y = i;
+
         if (this.grid.cellAvailable(cell)) {
           cellOptions.push(cell);
           break;
@@ -108,12 +109,15 @@ GameManager.prototype.addTile = function () {
     // Find the available cell with the best score
     var bestScore = 0;
     var winners = [];
-    var maxTileValue = Math.pow(2, Math.min(this.size * this.size, 32));
+    var invalidWinner = null;
+    //var maxTileValue = Math.pow(2, Math.min(this.size * this.size, 32));
     for (i = 0; i < cellOptions.length; i++) {
       // Look at the surrounding cells
-      var minValue = maxTileValue;
-      var scored = false;
-      var adjacent4 = false;
+      //var minValue = maxTileValue;
+      var maxValue = 0;
+      var valid_2 = false;
+      var valid_4 = false;
+      var scored = false
       for (var direction = 0; direction < 4; direction++) {
         var adjVector = this.getVector(direction);
         var adjCell = {
@@ -122,28 +126,38 @@ GameManager.prototype.addTile = function () {
         };
         var adjTile = this.grid.cellContent(adjCell);
         if (adjTile) {
-          minValue = Math.min(minValue, adjTile.value);
+          maxValue = Math.max(maxValue, adjTile.value);
           scored = true;
-          if (adjTile.value == 4)
-            adjacent4 = true;
+          if (adjTile.value == 2)
+            valid_2 = false;
+          else if (adjTile.value == 4)
+            valid_4 = false;
         }
       }
       if (!scored) {
-        minValue = 0;
+        maxValue = 0;
       }
-      if (minValue > bestScore) {
-        winners = [];
-        bestScore = minValue;
-      }
-      if (minValue >= bestScore) {
-        winners.push(cellOptions[i]);
+      var valid = valid_2 || valid_4;
+      if (maxValue >= bestScore) {
+        if (valid) {
+          if (maxValue > bestScore) {
+            winners = [];
+            bestScore = minValue;
+          }
+          winners.push(new Tile(cellOptions[i], valid_2 ? 2 : 4));
+        } else if (winners.length == 0) { // Invalid but no winner yet
+          invalidWinner = new Tile(cellOptions[i], 2);
+        }
       }
     }
     if (winners.length) {
       var winnerIndex = Math.floor(Math.random() * winners.length);
-      var value = (adjacent4 || bestScore != 2 ? 2 : 4);
-      var tile = new Tile(winners[winnerIndex], value);
-      this.grid.insertTile(tile);
+      //var value = (adjacent4 || bestScore != 2 ? 2 : 4);
+      //var tile = new Tile(winners[winnerIndex], value);
+      //this.grid.insertTile(tile);
+      this.grid.insertTile(winners[winnerIndex]);
+    } else {
+      this.grid.insertTile(invalidWinner);
     }
   }
 };
