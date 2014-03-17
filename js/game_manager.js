@@ -5,6 +5,8 @@ function GameManager(size, InputManager, Actuator, ScoreManager) {
   this.actuator     = new Actuator;
 
   this.startTiles   = 2;
+  
+  this.lastDirection = 0; // Most recent direction pressed
 
   this.inputManager.on("move", this.move.bind(this));
   this.inputManager.on("restart", this.restart.bind(this));
@@ -58,12 +60,74 @@ GameManager.prototype.addStartTiles = function () {
 
 // Adds a tile in (hopefully) the worst position possible
 GameManager.prototype.addTile = function () {
+  // 0: up, 1: right, 2:down, 3: left
+  var self = this;
   if (this.grid.cellsAvailable()) {
-    // TODO: change this code to be not random
-    var value = Math.random() < 0.9 ? 2 : 4;
-    var tile = new Tile(this.grid.randomAvailableCell(), value);
+    //var value = Math.random() < 0.9 ? 2 : 4;
+    //var tile = new Tile(this.grid.randomAvailableCell(), value);
+    // Strategy: place the new tile along the edge of the last direction the player pressed.
+    // This forces the player to press a different direction.
+    // Also, place the new tile next to the largest number possible.
+    var vector = this.getVector(this.lastDirection);
+    // Flip the direction
+    vector.x *= -1;
+    vector.y *= -1;
 
-    this.grid.insertTile(tile);
+    // Build an array next available cells in the direction specified.
+    var cellOptions = [];
+    for (var i = 0; i < this.size; i++) {
+      for (var j = 0; j < this.size; j++) {
+        var cell = {x: 0, y: 0};
+        if (vector.x == 1)
+          cell.x = j;
+        else if (vector.x == -1)
+          cell.x = this.size - j - 1;
+        else
+          cell.x = i;
+        if (vector.y == 1)
+          cell.y = j;
+        else if (vector.y == -1)
+          cell.y = this.size - j - 1;
+        else
+          cell.y = i;
+        if (this.grid.cellAvailable(cell)) {
+          cellOptions.add(cell);
+          break;
+        }
+      }
+    }
+    // Find the available cell with the best score
+    var bestScore = 0;
+    var winners = [];
+    var maxTileValue = Math.pow(2, this.size * this.size);
+    for (i = 0; i < cellOptions.length; i++) {
+      // Look at the surrounding cells
+      var minValue = maxTileValue;
+      for (var direction = 0; direction < 4; direction++) {
+        var adjVector = this.getVector(direction);
+        var adjCell = {
+          x: cellOptions[i].x + adjVector.x,
+          y: cellOptions[i].y + adjVector.y
+        };
+        var adjTile = this.grid.cellContent(adjCell);
+        if (adjTile) {
+          minValue = Math.min(minValue, adjTile.value);
+        }
+      }
+      if (minValue > bestScore) {
+        winners = [];
+        bestScore = minValue;
+      }
+      if (minValue >= bestScore) {
+        winners.push(cellOptions[i]);
+      }
+    }
+    if (winners.length) {
+      var winnerIndex = Math.floor(Math.random() * winners.length);
+      var value = (bestScore != 2 ? 2 : 4);
+      var tile = new Tile(winners[winnerIndex], value);
+      this.grid.insertTile(tile);
+    }
   }
 };
 
@@ -161,6 +225,7 @@ GameManager.prototype.move = function (direction) {
     }
 
     this.actuate();
+    this.lastDirection = direction;
   }
 };
 
