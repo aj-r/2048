@@ -58,10 +58,11 @@ GameManager.prototype.addStartTiles = function () {
   var corner = Math.floor(Math.random() * 4);
   if (corner > 1)
     cell1.y = this.size - 1;
-  if (corner % 2 > 0)
+  if (corner == 1 || corner == 2)
     cell1.x = this.size - 1;
   var value1 = (Math.random() > 0.5 ? 4 : 2);
   this.grid.insertTile(new Tile(cell1, value1));
+  this.lastDirection = corner;
   // Spawn the remaining tiles using the normal algorithm.
   for (var i = 1; i < this.startTiles; i++) {
     this.addTile();
