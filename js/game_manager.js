@@ -218,6 +218,7 @@ GameManager.prototype.move = function (direction) {
   });
 
   if (moved) {
+    this.lastDirection = direction;
     this.addTile();
 
     if (!this.movesAvailable()) {
@@ -225,7 +226,6 @@ GameManager.prototype.move = function (direction) {
     }
 
     this.actuate();
-    this.lastDirection = direction;
   }
 };
 
