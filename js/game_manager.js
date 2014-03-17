@@ -91,7 +91,7 @@ GameManager.prototype.addTile = function () {
         else
           cell.y = i;
         if (this.grid.cellAvailable(cell)) {
-          cellOptions.add(cell);
+          cellOptions.push(cell);
           break;
         }
       }
