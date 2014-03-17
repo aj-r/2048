@@ -126,7 +126,7 @@ GameManager.prototype.addTile = function () {
         }
       }
       if (!scored) {
-        score = 0;
+        minValue = 0;
       }
       if (minValue > bestScore) {
         winners = [];
