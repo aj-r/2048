@@ -108,13 +108,14 @@ GameManager.prototype.addTile = function () {
     }
     // Find the available cell with the best score
     var bestScore = 0;
+    var bestInvalidScore = 0;
     var winners = [];
     var invalidWinner = null;
     //var maxTileValue = Math.pow(2, Math.min(this.size * this.size, 32));
     for (i = 0; i < cellOptions.length; i++) {
       // Look at the surrounding cells
       //var minValue = maxTileValue;
-      var maxValue = 0;
+      var score = 0;
       var valid_2 = true;
       var valid_4 = true;
       var scored = false;
@@ -126,7 +127,7 @@ GameManager.prototype.addTile = function () {
         };
         var adjTile = this.grid.cellContent(adjCell);
         if (adjTile) {
-          maxValue = Math.max(maxValue, adjTile.value);
+          score = Math.max(score, adjTile.value);
           scored = true;
           if (adjTile.value == 2)
             valid_2 = false;
@@ -135,18 +136,19 @@ GameManager.prototype.addTile = function () {
         }
       }
       if (!scored) {
-        maxValue = 0;
+        score = 0;
       }
       var valid = valid_2 || valid_4;
-      if (maxValue >= bestScore) {
+      if (score >= bestScore) {
         if (valid) {
-          if (maxValue > bestScore) {
+          if (score > bestScore) {
             winners = [];
-            bestScore = minValue;
+            bestScore = score;
           }
           winners.push(new Tile(cellOptions[i], valid_2 ? 2 : 4));
-        } else if (winners.length == 0) { // Invalid but no winner yet
+        } else if (winners.length == 0 && score >= bestInvalidScore) { // Invalid but no winner yet
           invalidWinner = new Tile(cellOptions[i], 2);
+          bestInvalidScore = score;
         }
       }
     }
