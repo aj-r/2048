@@ -115,9 +115,9 @@ GameManager.prototype.addTile = function () {
       // Look at the surrounding cells
       //var minValue = maxTileValue;
       var maxValue = 0;
-      var valid_2 = false;
-      var valid_4 = false;
-      var scored = false
+      var valid_2 = true;
+      var valid_4 = true;
+      var scored = false;
       for (var direction = 0; direction < 4; direction++) {
         var adjVector = this.getVector(direction);
         var adjCell = {
